@@ -19,7 +19,7 @@ public class User {
     private Long id;
     private String userName;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserDetail userDetail;
 
     public User() {

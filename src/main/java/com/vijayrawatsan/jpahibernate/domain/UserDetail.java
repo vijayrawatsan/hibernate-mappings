@@ -1,9 +1,12 @@
 package com.vijayrawatsan.jpahibernate.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 /**
  * Created by vijayrawatsan on 07/09/17.
@@ -16,13 +19,18 @@ public class UserDetail {
     private String userPreference;
     private String gender;
 
+    @OneToOne(fetch = FetchType.LAZY) // Why you lie about being lazy?
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public UserDetail() {
     }
 
-    public UserDetail(Long id, String userPreference, String gender) {
+    public UserDetail(Long id, String userPreference, String gender, User user) {
         this.id = id;
         this.userPreference = userPreference;
         this.gender = gender;
+        this.user = user;
     }
 
     public Long getId() {
@@ -49,6 +57,14 @@ public class UserDetail {
         this.gender = gender;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public static interface IdStep {
         UserPreferenceStep withId(Long id);
     }
@@ -58,17 +74,22 @@ public class UserDetail {
     }
 
     public static interface GenderStep {
-        BuildStep withGender(String gender);
+        UserStep withGender(String gender);
+    }
+
+    public static interface UserStep {
+        BuildStep withUser(User user);
     }
 
     public static interface BuildStep {
         UserDetail build();
     }
 
-    public static class Builder implements IdStep, UserPreferenceStep, GenderStep, BuildStep {
+    public static class Builder implements IdStep, UserPreferenceStep, GenderStep, UserStep, BuildStep {
         private Long id;
         private String userPreference;
         private String gender;
+        private User user;
 
         private Builder() {
         }
@@ -90,8 +111,14 @@ public class UserDetail {
         }
 
         @Override
-        public BuildStep withGender(String gender) {
+        public UserStep withGender(String gender) {
             this.gender = gender;
+            return this;
+        }
+
+        @Override
+        public BuildStep withUser(User user) {
+            this.user = user;
             return this;
         }
 
@@ -100,7 +127,8 @@ public class UserDetail {
             return new UserDetail(
                 this.id,
                 this.userPreference,
-                this.gender
+                this.gender,
+                this.user
             );
         }
     }

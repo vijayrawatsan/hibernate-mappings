@@ -35,7 +35,9 @@ public class UserService {
 
     public User createUser() {
         User user = getUser();
-        user.setUserDetail(getUserDetail());
+        UserDetail userDetail = getUserDetail();
+        userDetail.setUser(user);
+        user.setUserDetail(userDetail);
         return userRepository.save(user);
     }
 
@@ -49,6 +51,6 @@ public class UserService {
 
     private UserDetail getUserDetail() {
         return UserDetail.Builder
-            .userDetail().withId(null).withUserPreference("blah").withGender("M").build();
+            .userDetail().withId(null).withUserPreference("blah").withGender("M").withUser(null).build();
     }
 }
