@@ -19,16 +19,12 @@ public class User {
     private Long id;
     private String userName;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private UserDetail userDetail;
-
     public User() {
     }
 
-    public User(Long id, String userName, UserDetail userDetail) {
+    public User(Long id, String userName) {
         this.id = id;
         this.userName = userName;
-        this.userDetail = userDetail;
     }
 
     public Long getId() {
@@ -47,34 +43,21 @@ public class User {
         this.userName = userName;
     }
 
-    public UserDetail getUserDetail() {
-        return userDetail;
-    }
-
-    public void setUserDetail(UserDetail userDetail) {
-        this.userDetail = userDetail;
-    }
-
     public static interface IdStep {
         UserNameStep withId(Long id);
     }
 
     public static interface UserNameStep {
-        UserDetailStep withUserName(String userName);
-    }
-
-    public static interface UserDetailStep {
-        BuildStep withUserDetail(UserDetail userDetail);
+        BuildStep withUserName(String userName);
     }
 
     public static interface BuildStep {
         User build();
     }
 
-    public static class Builder implements IdStep, UserNameStep, UserDetailStep, BuildStep {
+    public static class Builder implements IdStep, UserNameStep, BuildStep {
         private Long id;
         private String userName;
-        private UserDetail userDetail;
 
         private Builder() {
         }
@@ -90,14 +73,8 @@ public class User {
         }
 
         @Override
-        public UserDetailStep withUserName(String userName) {
+        public BuildStep withUserName(String userName) {
             this.userName = userName;
-            return this;
-        }
-
-        @Override
-        public BuildStep withUserDetail(UserDetail userDetail) {
-            this.userDetail = userDetail;
             return this;
         }
 
@@ -105,8 +82,7 @@ public class User {
         public User build() {
             return new User(
                 this.id,
-                this.userName,
-                this.userDetail
+                this.userName
             );
         }
     }

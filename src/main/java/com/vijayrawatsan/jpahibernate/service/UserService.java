@@ -35,8 +35,11 @@ public class UserService {
 
     public User createUser() {
         User user = getUser();
-        user.setUserDetail(getUserDetail());
-        return userRepository.save(user);
+        user = userRepository.save(user);
+        UserDetail userDetail = getUserDetail();
+        userDetail.setUser(user);
+        userDetailRepository.save(userDetail);
+        return user;
     }
 
     public User findUser(Long id) {
@@ -44,11 +47,11 @@ public class UserService {
     }
 
     private User getUser() {
-        return User.Builder.user().withId(null).withUserName("a").withUserDetail(null).build();
+        return User.Builder.user().withId(null).withUserName("a").build();
     }
 
     private UserDetail getUserDetail() {
         return UserDetail.Builder
-            .userDetail().withId(null).withUserPreference("blah").withGender("M").build();
+            .userDetail().withId(null).withUserPreference("blah").withGender("M").withUser(null).build();
     }
 }
