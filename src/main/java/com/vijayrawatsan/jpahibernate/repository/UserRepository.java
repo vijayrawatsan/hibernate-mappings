@@ -2,6 +2,7 @@ package com.vijayrawatsan.jpahibernate.repository;
 
 import com.vijayrawatsan.jpahibernate.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 /**
@@ -14,4 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "select count(*) from User")
     int nonNativeCount();
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update User set userName = 'asd'", nativeQuery = true)
+    void updateUserName();
 }

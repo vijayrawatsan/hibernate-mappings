@@ -1,6 +1,5 @@
 package com.vijayrawatsan.jpahibernate;
 
-import com.vijayrawatsan.jpahibernate.domain.User;
 import com.vijayrawatsan.jpahibernate.service.UserService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,14 +31,7 @@ public class JpaHibernateApplication implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
         hr();
-        //one to few
-        //just a single insert
-        User user = userService.createUser();
-        hr();
-        userService.findFirstAddress(user.getId());
-        hr();
-        //just a single delete
-        userService.deleteFirstAddress(user.getId());
+        userService.getFromCache5();
         hr();
     }
     

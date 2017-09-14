@@ -4,8 +4,10 @@ import com.google.common.collect.Lists;
 import com.vijayrawatsan.jpahibernate.domain.Address;
 import com.vijayrawatsan.jpahibernate.domain.User;
 import com.vijayrawatsan.jpahibernate.repository.AddressRepository;
+import com.vijayrawatsan.jpahibernate.repository.PostRepository;
 import com.vijayrawatsan.jpahibernate.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -25,6 +27,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private AddressRepository userDetailRepository;
@@ -57,6 +62,71 @@ public class UserService {
         User one = userRepository.findOne(id);
         one.getAddresses().remove(0);
     }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public void getFromCache() {
+        User user = getUser();
+        //create user
+        userRepository.save(user);
+
+        User one = userRepository.findOne(1l);
+        System.out.println(one.getUserName());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void getFromCache2() {
+        User user = getUser();
+        //create user
+        User saved = userRepository.save(user);
+        saved.setUserName("blah");
+        postRepository.findAll();
+        logger.info("{}", saved.getUserName().equals(saved.getUserName()));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void getFromCache3() {
+        User user = getUser();
+        //create user
+        User saved = userRepository.save(user);
+        saved.setUserName("blah");
+        postRepository.findPost("data");
+        logger.info("{}", saved.getUserName().equals(saved.getUserName()));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void getFromCache4() {
+        User user = getUser();
+        //create user
+        User saved = userRepository.save(user);
+        saved.setUserName("blah");
+        postRepository.findPost2("data");
+        logger.info("{}", userRepository.findOne(saved.getId()).getUserName());
+        logger.info("{}", userRepository.findAll().get(0).getUserName());
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public void getFromCache5() {
+        User user = getUser();
+        //create user
+        User saved = userRepository.save(user);
+        saved.setUserName("blah");
+        postRepository.updatePost();
+        logger.info("{}", userRepository.findOne(saved.getId()).getUserName());
+        logger.info("{}", userRepository.findAll().get(0).getUserName());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void getFromCache6() {
+        User user = getUser();
+        //create user
+        User saved = userRepository.save(user);
+        userRepository.updateUserName();
+        logger.info("{}", userRepository.findOne(saved.getId()).getUserName());
+        logger.info("{}", userRepository.findAll().get(0).getUserName());
+    }
+
 
     private User getUser() {
         User user = User.Builder.user().withId(null).withUserName("a").withAddresses(null).build();
