@@ -6,6 +6,7 @@ import com.vijayrawatsan.jpahibernate.domain.User;
 import com.vijayrawatsan.jpahibernate.repository.AddressRepository;
 import com.vijayrawatsan.jpahibernate.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private AddressRepository userDetailRepository;
+    private AddressRepository addressRepository;
 
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
@@ -42,24 +43,8 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public User findUser(Long id) {
-        return userRepository.findOne(id);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public String findFirstAddress(Long id) {
-        User one = userRepository.findOne(id);
-        return one.getAddresses().get(0).getAddress();
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteFirstAddress(Long id) {
-        User one = userRepository.findOne(id);
-        one.getAddresses().remove(0);
-    }
-
-    private User getUser() {
-        User user = User.Builder.user().withId(null).withUserName("a").withAddresses(null).build();
+    public List<Address> createAddresses(Long id) {
+        User user = userRepository.findOne(id);
         ArrayList<Address> addresses = Lists.newArrayList(Address.Builder.address()
             .withId(null)
             .withAddress("Add1")
@@ -69,7 +54,28 @@ public class UserService {
             .withAddress("Add2")
             .withUser(user)
             .build());
-        user.setAddresses(addresses);
+        List<Address> save =
+            addressRepository.save(addresses);
+        return save;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public User findUser(Long id) {
+        return userRepository.findOne(id);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public String findFirstAddress(Long id) {
+        return addressRepository.findFirstAddressByUserId(id).getAddress();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteFirstAddress(Long id) {
+        addressRepository.deleteFirstAddressByUserId(id);
+    }
+
+    private User getUser() {
+        User user = User.Builder.user().withId(null).withUserName("a").build();
         return user;
     }
 }

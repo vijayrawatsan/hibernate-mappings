@@ -21,20 +21,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userName;
-    @OneToMany(
-        mappedBy = "user",
-        cascade = CascadeType.ALL,
-        orphanRemoval = true
-    )
-    private List<Address> addresses;
 
     public User() {
     }
 
-    public User(Long id, String userName, List<Address> addresses) {
+    public User(Long id, String userName) {
         this.id = id;
         this.userName = userName;
-        this.addresses = addresses;
     }
 
     public Long getId() {
@@ -53,34 +46,21 @@ public class User {
         this.userName = userName;
     }
 
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
-    }
-
     public static interface IdStep {
         UserNameStep withId(Long id);
     }
 
     public static interface UserNameStep {
-        AddressesStep withUserName(String userName);
-    }
-
-    public static interface AddressesStep {
-        BuildStep withAddresses(List<Address> addresses);
+        BuildStep withUserName(String userName);
     }
 
     public static interface BuildStep {
         User build();
     }
 
-    public static class Builder implements IdStep, UserNameStep, AddressesStep, BuildStep {
+    public static class Builder implements IdStep, UserNameStep, BuildStep {
         private Long id;
         private String userName;
-        private List<Address> addresses;
 
         private Builder() {
         }
@@ -96,14 +76,8 @@ public class User {
         }
 
         @Override
-        public AddressesStep withUserName(String userName) {
+        public BuildStep withUserName(String userName) {
             this.userName = userName;
-            return this;
-        }
-
-        @Override
-        public BuildStep withAddresses(List<Address> addresses) {
-            this.addresses = addresses;
             return this;
         }
 
@@ -111,8 +85,7 @@ public class User {
         public User build() {
             return new User(
                 this.id,
-                this.userName,
-                this.addresses
+                this.userName
             );
         }
     }

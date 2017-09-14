@@ -32,14 +32,17 @@ public class JpaHibernateApplication implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
         hr();
-        //one to few
-        //just a single insert
         User user = userService.createUser();
+        hr();
+        userService.createAddresses(user.getId());
         hr();
         userService.findFirstAddress(user.getId());
         hr();
-        //just a single delete
         userService.deleteFirstAddress(user.getId());
+        hr();
+        if (userService.findFirstAddress(user.getId()) == null) {
+            throw new RuntimeException("All addresses were deleted. Not expected.");
+        }
         hr();
     }
     
