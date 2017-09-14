@@ -5,6 +5,7 @@ import com.vijayrawatsan.jpahibernate.domain.Address;
 import com.vijayrawatsan.jpahibernate.domain.User;
 import com.vijayrawatsan.jpahibernate.repository.AddressRepository;
 import com.vijayrawatsan.jpahibernate.repository.UserRepository;
+import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -58,12 +59,17 @@ public class UserService {
     }
 
     private User getUser() {
-        return User.Builder.user().withId(null).withUserName("a").withAddresses(Lists.newArrayList(Address.Builder.address()
+        User user = User.Builder.user().withId(null).withUserName("a").withAddresses(null).build();
+        ArrayList<Address> addresses = Lists.newArrayList(Address.Builder.address()
             .withId(null)
             .withAddress("Add1")
+            .withUser(user)
             .build(), Address.Builder.address()
             .withId(null)
             .withAddress("Add2")
-            .build())).build();
+            .withUser(user)
+            .build());
+        user.setAddresses(addresses);
+        return user;
     }
 }

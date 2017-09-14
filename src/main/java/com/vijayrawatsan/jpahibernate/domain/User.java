@@ -22,10 +22,10 @@ public class User {
     private Long id;
     private String userName;
     @OneToMany(
+        mappedBy = "user",
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
-    @JoinColumn(name = "user_id")
     private List<Address> addresses;
 
     public User() {
