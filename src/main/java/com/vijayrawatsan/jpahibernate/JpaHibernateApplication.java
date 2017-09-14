@@ -32,12 +32,13 @@ public class JpaHibernateApplication implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
         hr();
-        //separate insert and update, instead of just insert
+        //one to few
+        //just a single insert
         User user = userService.createUser();
         hr();
         userService.findFirstAddress(user.getId());
         hr();
-        //separate update and delete, instead of just delete
+        //just a single delete
         userService.deleteFirstAddress(user.getId());
         hr();
     }
