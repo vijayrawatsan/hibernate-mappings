@@ -1,10 +1,7 @@
 package com.vijayrawatsan.jpahibernate;
 
-import com.vijayrawatsan.jpahibernate.domain.Address;
 import com.vijayrawatsan.jpahibernate.domain.User;
 import com.vijayrawatsan.jpahibernate.service.UserService;
-import java.io.IOException;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -34,10 +31,19 @@ public class JpaHibernateApplication implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        entityManager.createNativeQuery("select '---------------------------------------------------------------------' ").getResultList();
+        hr();
+        //separate insert and update, instead of just insert
         User user = userService.createUser();
+        hr();
         userService.findFirstAddress(user.getId());
-        entityManager.createNativeQuery("select '---------------------------------------------------------------------' ").getResultList();
+        hr();
+        //separate update and delete, instead of just delete
+        userService.deleteFirstAddress(user.getId());
+        hr();
     }
-
+    
+    private void hr() {
+        String query = "select '---------------------------------------------------------------------'";
+        entityManager.createNativeQuery(query).getResultList();
+    }
 }

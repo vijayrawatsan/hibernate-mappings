@@ -51,6 +51,12 @@ public class UserService {
         return one.getAddresses().get(0).getAddress();
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteFirstAddress(Long id) {
+        User one = userRepository.findOne(id);
+        one.getAddresses().remove(0);
+    }
+
     private User getUser() {
         return User.Builder.user().withId(null).withUserName("a").withAddresses(Lists.newArrayList(Address.Builder.address()
             .withId(null)
@@ -60,5 +66,4 @@ public class UserService {
             .withAddress("Add2")
             .build())).build();
     }
-
 }
