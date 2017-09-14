@@ -1,8 +1,10 @@
 package com.vijayrawatsan.jpahibernate;
 
+import com.vijayrawatsan.jpahibernate.domain.Address;
 import com.vijayrawatsan.jpahibernate.domain.User;
 import com.vijayrawatsan.jpahibernate.service.UserService;
 import java.io.IOException;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -33,8 +35,9 @@ public class JpaHibernateApplication implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
         entityManager.createNativeQuery("select '---------------------------------------------------------------------' ").getResultList();
+        //creates a separate mapping table
         User user = userService.createUser();
-        userService.findUser(user.getId());
+        userService.findFirstAddress(user.getId());
         entityManager.createNativeQuery("select '---------------------------------------------------------------------' ").getResultList();
     }
 

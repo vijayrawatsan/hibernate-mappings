@@ -1,11 +1,13 @@
 package com.vijayrawatsan.jpahibernate.domain;
 
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 /**
@@ -18,17 +20,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userName;
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private UserDetail userDetail;
+    @OneToMany(
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<Address> addresses;
 
     public User() {
     }
 
-    public User(Long id, String userName, UserDetail userDetail) {
+    public User(Long id, String userName, List<Address> addresses) {
         this.id = id;
         this.userName = userName;
-        this.userDetail = userDetail;
+        this.addresses = addresses;
     }
 
     public Long getId() {
@@ -47,12 +51,12 @@ public class User {
         this.userName = userName;
     }
 
-    public UserDetail getUserDetail() {
-        return userDetail;
+    public List<Address> getAddresses() {
+        return addresses;
     }
 
-    public void setUserDetail(UserDetail userDetail) {
-        this.userDetail = userDetail;
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
     }
 
     public static interface IdStep {
@@ -60,21 +64,21 @@ public class User {
     }
 
     public static interface UserNameStep {
-        UserDetailStep withUserName(String userName);
+        AddressesStep withUserName(String userName);
     }
 
-    public static interface UserDetailStep {
-        BuildStep withUserDetail(UserDetail userDetail);
+    public static interface AddressesStep {
+        BuildStep withAddresses(List<Address> addresses);
     }
 
     public static interface BuildStep {
         User build();
     }
 
-    public static class Builder implements IdStep, UserNameStep, UserDetailStep, BuildStep {
+    public static class Builder implements IdStep, UserNameStep, AddressesStep, BuildStep {
         private Long id;
         private String userName;
-        private UserDetail userDetail;
+        private List<Address> addresses;
 
         private Builder() {
         }
@@ -90,14 +94,14 @@ public class User {
         }
 
         @Override
-        public UserDetailStep withUserName(String userName) {
+        public AddressesStep withUserName(String userName) {
             this.userName = userName;
             return this;
         }
 
         @Override
-        public BuildStep withUserDetail(UserDetail userDetail) {
-            this.userDetail = userDetail;
+        public BuildStep withAddresses(List<Address> addresses) {
+            this.addresses = addresses;
             return this;
         }
 
@@ -106,7 +110,7 @@ public class User {
             return new User(
                 this.id,
                 this.userName,
-                this.userDetail
+                this.addresses
             );
         }
     }
