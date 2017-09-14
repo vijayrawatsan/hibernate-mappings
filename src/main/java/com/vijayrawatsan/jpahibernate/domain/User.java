@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -22,12 +24,20 @@ public class User {
     private Long id;
     private String userName;
 
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "user_address",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "address_id")
+    )
+    private List<Address> addresses;
+
     public User() {
     }
 
-    public User(Long id, String userName) {
+    public User(Long id, String userName, List<Address> addresses) {
         this.id = id;
         this.userName = userName;
+        this.addresses = addresses;
     }
 
     public Long getId() {
@@ -46,21 +56,34 @@ public class User {
         this.userName = userName;
     }
 
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
     public static interface IdStep {
         UserNameStep withId(Long id);
     }
 
     public static interface UserNameStep {
-        BuildStep withUserName(String userName);
+        AddressesStep withUserName(String userName);
+    }
+
+    public static interface AddressesStep {
+        BuildStep withAddresses(List<Address> addresses);
     }
 
     public static interface BuildStep {
         User build();
     }
 
-    public static class Builder implements IdStep, UserNameStep, BuildStep {
+    public static class Builder implements IdStep, UserNameStep, AddressesStep, BuildStep {
         private Long id;
         private String userName;
+        private List<Address> addresses;
 
         private Builder() {
         }
@@ -76,8 +99,14 @@ public class User {
         }
 
         @Override
-        public BuildStep withUserName(String userName) {
+        public AddressesStep withUserName(String userName) {
             this.userName = userName;
+            return this;
+        }
+
+        @Override
+        public BuildStep withAddresses(List<Address> addresses) {
+            this.addresses = addresses;
             return this;
         }
 
@@ -85,8 +114,22 @@ public class User {
         public User build() {
             return new User(
                 this.id,
-                this.userName
+                this.userName,
+                this.addresses
             );
         }
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return userName != null ? userName.equals(user.userName) : user.userName == null;
+    }
+
+    @Override public int hashCode() {
+        return userName != null ? userName.hashCode() : 0;
     }
 }

@@ -1,6 +1,7 @@
 package com.vijayrawatsan.jpahibernate;
 
 import com.vijayrawatsan.jpahibernate.domain.User;
+import com.vijayrawatsan.jpahibernate.repository.AddressRepository;
 import com.vijayrawatsan.jpahibernate.service.UserService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,8 +19,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 public class JpaHibernateApplication implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(JpaHibernateApplication.class);
+
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AddressRepository addressRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -32,22 +37,28 @@ public class JpaHibernateApplication implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
         hr();
-        User user = userService.createUser();
+        User user1 = userService.createUser("u1");
         hr();
-        userService.createAddresses(user.getId());
+        User user2 = userService.createUser("u2");
         hr();
-        userService.findFirstAddress(user.getId());
-        hr();
-        userService.deleteFirstAddress(user.getId());
-        hr();
-        if (userService.findFirstAddress(user.getId()) == null) {
-            throw new RuntimeException("All addresses were deleted. Not expected.");
-        }
-        hr();
+        userService.deleteAddress(user1.getId(), "a1");
+        userService.deleteAddress(user2.getId(), "a1");
+        long count = addressRepository.count();
+        logger.info("Count should be 2 : {}", count);
+        //userService.createAddresses(user.getId());
+        //hr();
+        //userService.findFirstAddress(user.getId());
+        //hr();
+        //userService.deleteFirstAddress(user.getId());
+        //hr();
+        //if (userService.findFirstAddress(user.getId()) == null) {
+        //    throw new RuntimeException("All addresses were deleted. Not expected.");
+        //}
+        //hr();
     }
     
     private void hr() {
-        String query = "select '---------------------------------------------------------------------'";
+        String query = "select '---------------------------------------------------------------------' from DUAL";
         entityManager.createNativeQuery(query).getResultList();
     }
 }

@@ -1,12 +1,11 @@
 package com.vijayrawatsan.jpahibernate.domain;
 
+import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 
 /**
  * Created by vijayrawatsan on 11/09/17.
@@ -18,17 +17,16 @@ public class Address {
     private Long id;
     private String address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToMany(mappedBy = "addresses")
+    private List<User> users;
 
     public Address() {
     }
 
-    public Address(Long id, String address, User user) {
+    public Address(Long id, String address, List<User> users) {
         this.id = id;
         this.address = address;
-        this.user = user;
+        this.users = users;
     }
 
     public Long getId() {
@@ -47,12 +45,12 @@ public class Address {
         this.address = address;
     }
 
-    public User getUser() {
-        return user;
+    public List<User> getUsers() {
+        return users;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     public static interface IdStep {
@@ -60,21 +58,21 @@ public class Address {
     }
 
     public static interface AddressStep {
-        UserStep withAddress(String address);
+        UsersStep withAddress(String address);
     }
 
-    public static interface UserStep {
-        BuildStep withUser(User user);
+    public static interface UsersStep {
+        BuildStep withUsers(List<User> users);
     }
 
     public static interface BuildStep {
         Address build();
     }
 
-    public static class Builder implements IdStep, AddressStep, UserStep, BuildStep {
+    public static class Builder implements IdStep, AddressStep, UsersStep, BuildStep {
         private Long id;
         private String address;
-        private User user;
+        private List<User> users;
 
         private Builder() {
         }
@@ -90,14 +88,14 @@ public class Address {
         }
 
         @Override
-        public UserStep withAddress(String address) {
+        public UsersStep withAddress(String address) {
             this.address = address;
             return this;
         }
 
         @Override
-        public BuildStep withUser(User user) {
-            this.user = user;
+        public BuildStep withUsers(List<User> users) {
+            this.users = users;
             return this;
         }
 
@@ -106,8 +104,21 @@ public class Address {
             return new Address(
                 this.id,
                 this.address,
-                this.user
+                this.users
             );
         }
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Address address1 = (Address) o;
+
+        return address != null ? address.equals(address1.address) : address1.address == null;
+    }
+
+    @Override public int hashCode() {
+        return address != null ? address.hashCode() : 0;
     }
 }
