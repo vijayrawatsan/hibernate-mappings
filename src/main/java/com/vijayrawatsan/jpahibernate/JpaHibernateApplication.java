@@ -42,6 +42,7 @@ public class JpaHibernateApplication implements CommandLineRunner {
         User user2 = userService.createUser("u2");
         hr();
         userService.deleteAddress(user1.getId(), "a1");
+        hr();
         userService.deleteAddress(user2.getId(), "a1");
         long count = addressRepository.count();
         logger.info("Count should be 2 : {}", count);

@@ -1,6 +1,7 @@
 package com.vijayrawatsan.jpahibernate.domain;
 
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,15 +30,28 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "address_id")
     )
-    private List<Address> addresses;
+    private Set<Address> addresses;
 
     public User() {
     }
 
-    public User(Long id, String userName, List<Address> addresses) {
+    public User(Long id, String userName, Set<Address> addresses) {
         this.id = id;
         this.userName = userName;
         this.addresses = addresses;
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return userName != null ? userName.equals(user.userName) : user.userName == null;
+    }
+
+    @Override public int hashCode() {
+        return userName != null ? userName.hashCode() : 0;
     }
 
     public Long getId() {
@@ -56,11 +70,11 @@ public class User {
         this.userName = userName;
     }
 
-    public List<Address> getAddresses() {
+    public Set<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(List<Address> addresses) {
+    public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
     }
 
@@ -73,7 +87,7 @@ public class User {
     }
 
     public static interface AddressesStep {
-        BuildStep withAddresses(List<Address> addresses);
+        BuildStep withAddresses(Set<Address> addresses);
     }
 
     public static interface BuildStep {
@@ -83,7 +97,7 @@ public class User {
     public static class Builder implements IdStep, UserNameStep, AddressesStep, BuildStep {
         private Long id;
         private String userName;
-        private List<Address> addresses;
+        private Set<Address> addresses;
 
         private Builder() {
         }
@@ -105,7 +119,7 @@ public class User {
         }
 
         @Override
-        public BuildStep withAddresses(List<Address> addresses) {
+        public BuildStep withAddresses(Set<Address> addresses) {
             this.addresses = addresses;
             return this;
         }
@@ -118,18 +132,5 @@ public class User {
                 this.addresses
             );
         }
-    }
-
-    @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        return userName != null ? userName.equals(user.userName) : user.userName == null;
-    }
-
-    @Override public int hashCode() {
-        return userName != null ? userName.hashCode() : 0;
     }
 }

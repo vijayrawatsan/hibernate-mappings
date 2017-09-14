@@ -1,11 +1,11 @@
 package com.vijayrawatsan.jpahibernate.service;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.vijayrawatsan.jpahibernate.domain.Address;
 import com.vijayrawatsan.jpahibernate.domain.User;
 import com.vijayrawatsan.jpahibernate.repository.AddressRepository;
 import com.vijayrawatsan.jpahibernate.repository.UserRepository;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
@@ -46,9 +46,9 @@ public class UserService {
         if (address2 == null) {
             address2 = getAddress("a2");
         }
-        user1.setAddresses(Lists.newArrayList(address1, address2));
-        address1.setUsers(Lists.newArrayList(user1));
-        address2.setUsers(Lists.newArrayList(user1));
+        user1.setAddresses(Sets.newHashSet(address1, address2));
+        address1.setUsers(Sets.newHashSet(user1));
+        address2.setUsers(Sets.newHashSet(user1));
 
         return userRepository.save(user1);
     }
@@ -84,7 +84,7 @@ public class UserService {
     public void deleteAddress(Long id, String addressVal) {
         User one = userRepository.findOne(id);
         Address address = addressRepository.findByAddress(addressVal);
-        List<Address> addresses = one.getAddresses();
+        Set<Address> addresses = one.getAddresses();
         addresses.remove(address);
         address.getUsers().remove(one);
         userRepository.save(one);
